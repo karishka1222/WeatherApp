@@ -15,11 +15,11 @@ class _InputCityPageState extends State<InputCityPage> {
   final TextEditingController _controller = TextEditingController();
 
   void navigateToWeatherScreen() {
-    final cityName = _controller.text;
+    final String cityName = _controller.text;
     if (cityName.isEmpty) {
       AlertDialog();
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => WeatherPage()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => WeatherPage(cityName: cityName,)));
       _controller.clear();
     }
   }
