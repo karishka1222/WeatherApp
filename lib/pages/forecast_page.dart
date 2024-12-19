@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/models/forecast_model.dart';
 import 'package:weather_app/models/weather_model.dart';
 import 'package:weather_app/pages/input_city_page.dart';
+import 'package:weather_app/services/forecast_service.dart';
 import 'package:weather_app/services/weather_service.dart';
 
 class ForecastPage extends StatefulWidget {
@@ -13,14 +15,14 @@ class ForecastPage extends StatefulWidget {
 }
 
 class _ForecastPageState extends State<ForecastPage> {
-  final _weatherService = WeatherService();
-  WeatherModel? _weather;
+  final _forecastService = ForecastService();
+  ForecastModel? _forecastModel;
 
-  fetchWeather() async {
+  fetchForecast() async {
     try {
-      final weather = await _weatherService.getWeather(widget.cityName);
+      final forecast = await _forecastService.getForecast(widget.cityName);
       setState(() {
-        _weather = weather;
+        _forecastModel = forecast;
       });
     } catch (e) {
       print(e);
@@ -38,7 +40,7 @@ class _ForecastPageState extends State<ForecastPage> {
   @override
   void initState() {
     super.initState();
-    fetchWeather();
+    fetchForecast();
   }
 
   @override
@@ -51,30 +53,20 @@ class _ForecastPageState extends State<ForecastPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "Today's weather",
+                "Forecast for 4 days",
                 style: TextStyle(
                   fontSize: 35,
                 ),
               ),
               SizedBox(height: 25,),
               Text(
-                '${_weather?.cityName}',
+                '${widget.cityName}',
                 style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
-              Text(
-                '${_weather?.temperature} °C',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w300,
-                  ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                '${_weather?.condition}',
-                style: TextStyle(fontSize: 20),
-              ),
               SizedBox(height: 20),
+              Text('${_forecastModel?.day1.date}'),
+              Text('${_forecastModel?.day1.temperature}'),
+              Text('${_forecastModel?.day1.condition}'),
               Row(
                 children: [
                   ElevatedButton(
