@@ -23,12 +23,10 @@ class MyTextField extends StatelessWidget {
         controller: controller,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Colors.black),
+            borderSide: BorderSide(color: Colors.black),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Colors.black),
+            borderSide: BorderSide(color: Colors.black),
           ),
           fillColor: Colors.white,
           filled: true,
