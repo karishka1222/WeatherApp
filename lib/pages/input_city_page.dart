@@ -3,8 +3,6 @@ import 'package:weather_app/components/my_textfiled.dart';
 import 'package:weather_app/pages/weather_page.dart';
 
 class InputCityPage extends StatefulWidget {
-
-
   InputCityPage({super.key});
 
   @override
@@ -19,7 +17,12 @@ class _InputCityPageState extends State<InputCityPage> {
     if (cityName.isEmpty) {
       AlertDialog();
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => WeatherPage(cityName: cityName,)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WeatherPage(
+                    cityName: cityName,
+                  )));
       _controller.clear();
     }
   }
@@ -33,19 +36,25 @@ class _InputCityPageState extends State<InputCityPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Please enter city name for which you want to find out the weather", 
+              "Please enter city name for which you want to find out the weather",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.black,
-
               ),
             ),
-            SizedBox(height: 50,),
-            MyTextField(hintText: "Enter city name", obscureText: false, controller: _controller),
-            SizedBox(height: 50,),
+            SizedBox(
+              height: 50,
+            ),
+            MyTextField(
+                hintText: "Enter city name",
+                obscureText: false,
+                controller: _controller),
+            SizedBox(
+              height: 50,
+            ),
             ElevatedButton(
-              onPressed: navigateToWeatherScreen, 
+              onPressed: navigateToWeatherScreen,
               child: Text("Get weather"),
             ),
           ],

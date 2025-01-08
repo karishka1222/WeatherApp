@@ -1,86 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/models/forecast_model.dart';
-import 'package:weather_app/models/weather_model.dart';
-import 'package:weather_app/pages/input_city_page.dart';
-import 'package:weather_app/services/forecast_service.dart';
-import 'package:weather_app/services/weather_service.dart';
+import 'package:weather_app/bloc/weather_bloc.dart';
 
-class ForecastPage extends StatefulWidget {
+class ForecastPage extends StatelessWidget {
   final String cityName;
+  final WeatherBloc weatherBloc = WeatherBloc();
 
-  ForecastPage({super.key, required this.cityName});
-
-  @override
-  State<ForecastPage> createState() => _ForecastPageState();
-}
-
-class _ForecastPageState extends State<ForecastPage> {
-  final _forecastService = ForecastService();
-  ForecastModel? _forecastModel;
-
-  fetchForecast() async {
-    try {
-      final forecast = await _forecastService.getForecast(widget.cityName);
-      setState(() {
-        _forecastModel = forecast;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void navigateToWeatherScreen() {
-    Navigator.pop(context);
-  }
-
-  void navigateToInputScreen() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => InputCityPage()));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchForecast();
+  ForecastPage({super.key, required this.cityName}) {
+    weatherBloc.fetchForecast(cityName);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("$cityName's forecast"),
+      ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 100),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Forecast for 4 days",
-                style: TextStyle(
-                  fontSize: 35,
-                ),
-              ),
-              SizedBox(height: 25,),
-              Text(
-                '${widget.cityName}',
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              Text('${_forecastModel?.day1.date}'),
-              Text('${_forecastModel?.day1.temperature}'),
-              Text('${_forecastModel?.day1.condition}'),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: navigateToWeatherScreen, 
-                    child: Text("Return to current weather"),
-                  ),
-                  ElevatedButton(
-                    onPressed: navigateToInputScreen, 
-                    child: Text("Choose another city"),
-                  ),
-                ],
-              ),
-            ],
-          ),
+        child: StreamBuilder<Map<String, dynamic>>(
+          stream: weatherBloc.forecastStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('${snapshot.error}'),
+              );
+            } else if (!snapshot.hasData) {
+              return Center(
+                child: Text('No data available'),
+              );
+            } else {
+              final forecast = snapshot.data!;
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: forecast['list'].length,
+                itemBuilder: (context, index) {
+                  final item = forecast['list'][index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      title: Text(
+                        'Date: ${item['dt_txt']}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Temp: ${item['main']['temp']} °C\nCondition: ${item['weather'][0]['description']}',
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          },
         ),
       ),
     );
